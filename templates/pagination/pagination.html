@@ -1,0 +1,18 @@
+<div class="pagination__space">
+  <div class="pagination">
+    <div class="pagination__container">
+      <button class="btn btn__cube btn__gray mdi mdi-chevron-left"
+              ng-if="::directionLinks" ng-class="{disabled: noPrevious()||ngDisabled}"
+              ng-click="selectPage(page - 1, $event)"></button>
+      <button class="btn btn__cube btn__gray"
+              ng-repeat="page in pages track by $index"
+              ng-class="{'btn__disable': page.active}"
+              ng-click="selectPage(page.number, $event)">
+        {{page.text}}
+      </button>
+      <button class="btn btn__cube btn__gray mdi mdi-chevron-right"
+              ng-if="::directionLinks" ng-class="{disabled: noNext()||ngDisabled}"
+              ng-click="selectPage(page + 1, $event)"></button>
+    </div>
+  </div>
+</div>

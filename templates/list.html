@@ -1,0 +1,71 @@
+<div class="h-page__container h-page__down h-page__up">
+    <div class="h-page h-page__min_height_600 level__2">
+
+        <button class="h-page__btn_close btn-icon btn-icon__big mdi mdi-close personal__btn_close" title="Закрыть"
+                ng-click="close()"></button>
+
+        <div class="personal__ctrl_event" ng-hide="pageLoaderShow">
+            <button class="btn-icon btn-icon__medium btn-icon__rounded btn-icon__green_soft mdi mdi-content-copy ng-hide" title="Копировать"
+                    ng-show="!add"
+                    ng-click="copy()"></button>
+            <button class="btn-icon btn-icon__medium btn-icon__rounded btn-icon__red mdi mdi-delete ng-hide" title="Удалить"
+                    ng-show="!add"
+                    ng-click="delete()"></button>
+            <button class="btn-icon btn-icon__medium btn-icon__rounded btn-icon__blue_soft mdi mdi-content-save" title="Сохранить"
+                    ng-class="{'btn-icon__disable': !changed}"
+                    ng-click="save()"></button>
+            <img class="personal__loader ng-hide" ng-show="loaderShow" src="/images/loader.gif">
+        </div>
+
+        <form name="listForm" novalidate autocomplete="off" ng-hide="pageLoaderShow">
+            <div class="personal-list__edit">
+
+                <div class="personal-list__label f__subhead_1 f__regular">Название списка</div>
+                <div class="personal-list__line">
+                    <div class="h-form__row personal-list__row_name">
+                        <input class="h-form__input h-form__input_subhead_1" placeholder="НАЗВАНИЕ СПИСКА"
+                               name="name"
+                               ng-model="listModel.name"
+                               ng-required="listForm.$submitted">
+                        <span class="h-form__message" ng-show="!listForm.name.$valid">Поле не может быть пустым</span>
+                    </div>
+                </div>
+
+                <div class="personal-list__label f__subhead_1 f__regular">Участники</div>
+
+                <div class="personal-list__line"
+                     ng-repeat="user in listModel.users"
+                     ng-class="{'personal-list__entry': $last}"
+                     ng-keypress="$last && addUser()">
+                    <div class="h-form__row">
+                        <input class="h-form__input h-form__input_subhead_1" placeholder="ИМЯ"
+                               type="text"
+                               name="{{'user' + $index}}"
+                               maxlength="30"
+                               autocomplete="off"
+                               ng-model="user.name"
+                               ng-required="(!$last || listModel.users.length === 1) && listForm.$submitted">
+                        <span class="h-form__message" ng-show="listForm['user' + $index].$error.required">Поле не может быть пустым</span>
+                    </div>
+                    <div class="personal-list__l h-form__row">
+                        <input class="h-form__input h-form__input_subhead_1" placeholder="EMAIL"
+                               type="email"
+                               name="{{'email' + $index}}"
+                               maxlength="30"
+                               autocomplete="off"
+                               ng-model="user.email"
+                               ng-required="(!$last || listModel.users.length === 1) && listForm.$submitted">
+                        <span class="h-form__message" ng-show="listForm['email' + $index].$error.required">Поле не может быть пустым</span>
+                        <span class="h-form__message" ng-show="listForm['email' + $index].$error.email">Неверный формат email</span>
+                    </div>
+                    <span class="btn-icon btn-icon__small mdi mdi-delete"
+                            ng-click="deleteUser($index)"></span>
+                </div>
+
+            </div>
+        </form>
+
+        <img class="h-page__loader" src="images/loader.gif" ng-show="pageLoaderShow">
+
+    </div>
+</div>

@@ -1,0 +1,142 @@
+<button title="Закрыть" class="btn-icon btn-icon__big btn__top_right_index mdi mdi-close" ng-click="hybinar.$emit('login')"></button>
+
+<div class="alert__content_block">
+    <div class="alert__absolute alert__vertical_align animation__perspective animation__layer_hide" ng-show="!registration && !recovery">
+        <form name="loginForm" class="alert__inline h-form h-form__200 h-form__white animation__layer"
+              ng-show="!registration && !recovery"
+              novalidate
+              autocomplete="on"
+              ng-submit="login(user, loginForm)">
+            <div class="h-form__row">
+                <input class="h-form__input"
+                       name="email"
+                       type="email"
+                       placeholder="EMAIL"
+                       autocomplete="on"
+                       ng-required="loginForm.$submitted"
+                       ng-model="user.email">
+                <span class="h-form__message" ng-show="!loginForm.email.$valid">Не верный формат email</span>
+            </div>
+            <div class="h-form__row">
+                <input class="h-form__input"
+                       name="password"
+                       type="password"
+                       placeholder="ПАРОЛЬ"
+                       autocomplete="off"
+                       ng-required="loginForm.$submitted"
+                       ng-minlength="1"
+                       ng-model="user.password"
+                       ng-class="{'h-form__input_error': (!loginForm.password.$valid || loginForm.authErr)}">
+                <span class="h-form__message" ng-show="!loginForm.password.$valid && !loginForm.authErr">Поле не может быть пустым</span>
+                <span class="h-form__message" ng-show="loginForm.password.$valid && loginForm.authErr">Не верный email или пароль</span>
+            </div>
+            <div class="text-align__left h-form__row_super h-form__gray-light-shadow">
+                <label>
+                    <input type="checkbox" ng-model="user.remember">
+                    Запомнить меня
+                </label>
+            </div>
+            <div class="text-align__right">
+                <button class="btn">Войти</button>
+            </div>
+            <div class="h-form__row_bottom">
+                <a href="#" class="btn-icon btn-icon__medium btn-icon__margin mdi mdi-vk" ng-click="loginVK()"></a>
+                <a href="#" class="btn-icon btn-icon__medium btn-icon__margin mdi mdi-facebook" ng-click="loginFB()"></a>
+            </div>
+        </form>
+    </div>
+    <div class="alert__absolute alert__vertical_align animation__perspective animation__layer_hide" ng-show="registration">
+        <form name="registrationForm" class="alert__inline h-form h-form__300 h-form__white animation__layer"
+              ng-show="registration" novalidate autocomplete="on">
+            <div ng-show="registrationForm.success">
+                Для завершения регистрации проверьте почтовый ящик и нажмите на ссылку в пришедшем от нас письме
+            </div>
+            <div class="h-form__row" ng-show="!registrationForm.success">
+                <input class="h-form__input"
+                       name="name"
+                       type="text"
+                       placeholder="ИМЯ"
+                       autocomplete="on"
+                       ng-required="registrationForm.$submitted"
+                       ng-model="registrationUser.name">
+                <span class="h-form__message" ng-show="!registrationForm.name.$valid">Поле не может быть пустым</span>
+            </div>
+            <div class="h-form__row" ng-show="!registrationForm.success">
+                <input class="h-form__input"
+                       name="email"
+                       type="email"
+                       placeholder="EMAIL"
+                       autocomplete="on"
+                       ng-class="{'h-form__input_error': registrationForm.error}"
+                       ng-keydown="registrationForm.error = false"
+                       ng-required="registrationForm.$submitted"
+                       ng-model="registrationUser.email">
+                <span class="h-form__message" ng-show="!registrationForm.email.$valid">Неверный формат email</span>
+                <span class="h-form__message" ng-show="registrationForm.email.$valid && registrationForm.error">Указанный email уже зарегистрирован</span>
+            </div>
+            <div class="h-form__row" ng-show="!registrationForm.success">
+                <input class="h-form__input"
+                       name="password"
+                       type="password"
+                       placeholder="ПАРОЛЬ"
+                       autocomplete="off"
+                       ng-minlength="6"
+                       ng-required="registrationForm.$submitted"
+                       ng-model="registrationUser.password">
+                <span class="h-form__message" ng-show="registrationForm.password1.$error.required">Поле не может быть пустым</span>
+                <span class="h-form__message" ng-show="registrationForm.password.$error.minlength">Минимальная длина пароля 6 символов</span>
+            </div>
+            <div class="h-form__row" ng-show="!registrationForm.success">
+                <input class="h-form__input"
+                       name="password1"
+                       type="password"
+                       placeholder="ПОВТОРИТЕ ПАРОЛЬ"
+                       autocomplete="off"
+                       ng-minlength="6"
+                       ng-class="{'h-form__input_error': registrationForm.password1.$valid && registrationForm.$submitted && registrationUser.password !== registrationUser.password1}"
+                       ng-required="registrationForm.$submitted"
+                       ng-model="registrationUser.password1">
+                <span class="h-form__message" ng-show="registrationForm.password1.$error.required">Поле не может быть пустым</span>
+                <span class="h-form__message" ng-show="registrationForm.password1.$error.minlength">Минимальная длина пароля 6 символов</span>
+                <span class="h-form__message" ng-show="registrationForm.password1.$valid && registrationForm.$submitted && registrationUser.password !== registrationUser.password1">
+                    Пароли не совпадают
+                </span>
+            </div>
+            <div class="h-form__row_super h-form__left" ng-show="!registrationForm.success">
+                Регистрируясь, вы даете согласие на обработку персональных данных
+            </div>
+            <div class="h-form__row_button text-align__right" ng-show="!registrationForm.success">
+                <button class="btn" ng-click="register(registrationUser, registrationForm)">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+            </div>
+        </form>
+    </div>
+    <div class="alert__absolute alert__vertical_align animation__perspective animation__layer_hide" ng-show="recovery">
+        <form name="recoveryForm"  class="alert__inline h-form h-form__300 h-form__white animation__layer" ng-show="recovery" novalidate autocomplete="on">
+            <div ng-show="recoveryForm.success">
+                Вам отправлено письмо с реквизитами для входа!
+                Пароль будет изменен только после входа под новыми реквизитами.
+            </div>
+            <div class="h-form__row" ng-show="!recoveryForm.success">
+                <input class="h-form__input"
+                       name="email"
+                       type="email"
+                       placeholder="ВВЕДИТЕ ВАШ E-MAIL"
+                       autocomplete="on"
+                       ng-required="recoveryForm.$submitted"
+                       ng-class="{'h-form__input_error': !recoveryForm.email.$valid || recoveryForm.error}"
+                       ng-model="recoveryUser.email">
+                <span class="h-form__message" ng-show="!recoveryForm.email.$valid">Неверный формат email</span>
+                <span class="h-form__message" ng-show="recoveryForm.email.$valid && recoveryForm.error">Пользователь с таким email не зарегистрирован</span>
+            </div>
+            <div class="h-form__row_button text-align__right" ng-show="!recoveryForm.success">
+                <button class="btn" ng-click="recover(recoveryUser, recoveryForm)">ОТПРАВИТЬ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="alert__ctrl_bottom">
+    <span class="btn__link h-form__white" ng-show="!recovery" ng-click="recovery = true; registration = false;">Забыли пароль?</span>
+    <span class="btn__link h-form__white" ng-show="!registration" ng-click="registration = true; recovery = false">Регистрация</span>
+    <span class="btn__link h-form__white" ng-show="registration || recovery" ng-click="registration = false; recovery = false">Вход</span>
+</div>

@@ -1,0 +1,42 @@
+
+<div class="h-page__container h-page__up">
+    <div class="h-page level__2 green-soft-bg">
+        <div class="h-tariffs h-tariffs__out" ng-controller="subscribeCtrl">
+            <div class="h-tariffs__cell" ng-repeat="tariff in tariffs">
+                <div class="h-tariffs__title f__headline">{{::tariff.name}}</div>
+                <div class="h-tariffs__price">
+                    {{::tariff.price | currency:'':0}} <span class="h-tariffs__sign">₽</span> / {{::tariff.period}}
+                </div>
+                <div class="h-tariffs__group">
+                    <div class="h-tariffs__option" ng-repeat="option in tariff.options">
+                        {{::option}}
+                        <span class="h-tariffs__check mdi mdi-check"></span>
+                    </div>
+                </div>
+                <button class="btn btn__white"
+                        ng-click="subscribe({subscription: $index, price: tariff.price })">{{::tariff.action}}</button>
+            </div>
+
+            <!--<div class="h-tariffs__your">Ваш тариф</div>-->
+        </div>
+    </div>
+</div>
+
+<div class="h-page__container h-page__before h-page__down">
+    <div class="h-page h-page__limit level__2">
+        <div class="faq">
+            <div class="faq__line">
+                <div class="faq__group" ng-repeat="group in specification">
+                    <div class="faq__icon mdi" ng-class="group.icon"></div>
+                    <div class="f__headline">{{::group.name}}</div>
+                    <div ng-repeat="item in group.content" ng-controller="showCtrl" ng-init="show = item.open">
+                        <a class="btn_link f__subhead_1" ng-click="show = !show" ng-class="{'faq__bold': show}">
+                            {{::item.title}}
+                        </a>
+                        <div class="faq__answer" ng-bind-html="$sce.trustAsHtml(item.content)" ng-show="show"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

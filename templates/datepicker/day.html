@@ -1,0 +1,23 @@
+<table role="grid" aria-labelledby="{{::uniqueId}}-title" aria-activedescendant="{{activeDateId}}">
+  <thead>
+    <tr>
+      <th><button type="button" class="btn-icon btn-icon__medium mdi mdi-chevron-left" ng-click="move(-1)" tabindex="-1"></button></th>
+      <th colspan="{{::5 + showWeeks}}"><button id="{{::uniqueId}}-title" role="heading" aria-live="assertive" aria-atomic="true" type="button" class="calendar__btn_txt" ng-click="toggleMode()" ng-disabled="datepickerMode === maxMode" tabindex="-1">{{title}}</button></th>
+      <th><button type="button" class="btn-icon btn-icon__medium mdi mdi-chevron-right" ng-click="move(1)" tabindex="-1"></button></th>
+    </tr>
+    <tr>
+      <th ng-if="showWeeks" class="text-center"></th>
+      <th ng-repeat="label in ::labels track by $index" class="text-center calendar__days"><small aria-label="{{::label.full}}">{{::label.abbr}}</small></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="row in rows track by $index">
+      <td ng-if="showWeeks" class="text-center h6"><em>{{ weekNumbers[$index] }}</em></td>
+      <td ng-repeat="dt in row track by dt.date" class="text-center" role="gridcell" id="{{::dt.uid}}" ng-class="::dt.customClass">
+        <button type="button" class="calendar__btn_day" ng-class="{'btn-info': dt.selected, active: isActive(dt), 'calendar__muted': dt.secondary, 'calendar__info': dt.current}" ng-click="select(dt.date)" ng-disabled="dt.disabled" tabindex="-1">
+          {{::dt.label}}
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,32 @@
+<div class="h-page__container h-page__down h-page__up">
+    <div class="h-page h-page__min_height_600 level__2">
+
+        <div class="personal__ctrl">
+            <button class="btn" ng-click="create()">Создать список</button>
+            <button class="btn" ng-click="import()">Импорт из Excel</button>
+        </div>
+
+        <div class="personal-list ng-hide"
+             ng-hide="pageLoaderShow"
+             ng-if="listsModel.length > 0">
+            <div class="personal-list__group"
+                 ng-repeat="letter in getLetters() | orderBy">
+                <div class="personal-list__letter">{{::letter}}</div>
+                <div class="personal-list__item"
+                     ng-repeat="list in getLists(letter)">
+                    <div class="personal-list__name">
+                        <a ng-href="#/lists/{{::list._id}}">{{::list.name}}</a>
+                    </div>
+                    <div class="personal-list__amount">
+                        <div class="personal-list__students gray-light-shadow mdi mdi-account-multiple" title="Количество участников"
+                             ng-if="$index === 0 && $parent.$index < 2"></div>
+                        {{::list.users.length}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <img class="h-page__loader" src="images/loader.gif" ng-show="pageLoaderShow">
+
+    </div>
+</div>

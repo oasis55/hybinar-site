@@ -1,0 +1,14 @@
+<div class="h-form__input f__body_2"
+     ng-click="!menuShow ? menuShow = true : menuShow = false"
+     oc-clickoutside="menuShow ? menuShow = false : false">
+    <div class="menu menu__choose level__1" ng-show="menuShow">
+        <div class="menu__item"
+             ng-repeat="item in items"
+             ng-class="{'menu__selected': item.default}"
+             ng-click="$parent.select($index)">
+            {{item.name}}
+        </div>
+    </div>
+    <span>{{itemSelected.name}}</span>
+    <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-menu-down"></span>
+</div>

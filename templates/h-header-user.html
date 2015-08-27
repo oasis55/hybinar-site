@@ -1,0 +1,18 @@
+<a href="#" class="h-header__a h-header__name ng-hide" ng-show="user" ng-click="userMenu = !userMenu; opening = true">
+    <span class="h-header__200">{{ user.name }}</span>
+</a>
+<div class="h-header__user ng-hide" ng-show="user" ng-click="userMenu = !userMenu; opening = true">
+    <img class="h-header__user_pic" ng-src="{{ user.pic ? user.pic : '/images/synopsis__user_pic.png' }}">
+</div>
+<div class="h-header__user_menu menu level__1 ng-hide" ng-show="userMenu" oc-clickoutside="opening ? (opening = false) : userMenu = false">
+    <div class="menu__item menu__not_btn" ng-click="userMenu = !userMenu">
+        <span class="h-header__200">{{ user.name }}</span><img class="h-header__user_pic" ng-src="{{ user.pic ? user.pic : '/images/synopsis__user_pic.png' }}">
+    </div>
+    <div class="menu__line"></div>
+    <a href="/profile/{{ user.id }}" class="menu__item" ng-click="userMenu = !userMenu">Мой канал</a>
+    <a href="/cabinet#/events" class="menu__item" ng-click="userMenu = !userMenu">Личный кабинет</a>
+    <!-- <a href="#" class="menu__item" ng-click="userMenu = !userMenu">Создать событие</a> -->
+    <a href="/profile" class="menu__item" ng-click="userMenu = !userMenu">Изменить профиль</a>
+    <a href="#" class="menu__item" ng-click="userMenu = !userMenu; logout()">Выйти</a>
+</div>
+<button class="h-header__btn h-header__login mdi mdi-login ng-hide" ng-show="!user" ng-click="login()"></button>

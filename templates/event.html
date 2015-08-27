@@ -1,0 +1,489 @@
+<div class="h-page__container h-page__down h-page__up">
+    <div class="h-page h-form h-page__min_height_600 level__2">
+        <button class="h-page__btn_close btn-icon btn-icon__big mdi mdi-close" title="Закрыть"
+                ng-class="{'personal__btn_close': !add}"
+                ng-click="close()"></button>
+
+        <div class="personal__ctrl_event ng-hide" ng-hide="pageLoaderShow">
+            <button class="btn-icon btn-icon__medium btn-icon__rounded btn-icon__green_soft mdi mdi-content-copy ng-hide" title="Копировать"
+                    ng-show="!add"
+                    ng-click="copy()"></button>
+            <button class="btn-icon btn-icon__medium btn-icon__rounded btn-icon__red mdi mdi-delete ng-hide" title="Удалить"
+                    ng-show="!add"
+                    ng-click="delete()"></button>
+            <button class="btn-icon btn-icon__medium btn-icon__rounded btn-icon__blue_soft mdi mdi-content-save ng-hide" title="Сохранить"
+                    ng-show="!past || add"
+                    ng-class="{'btn-icon__disable': !changed}"
+                    ng-click="save()"></button>
+            <img class="personal__loader ng-hide" ng-show="loaderShow" src="/images/loader.gif">
+        </div>
+
+        <form name="eventForm" novalidate autocomplete="off" ng-hide="pageLoaderShow">
+            <div class="h-profile h-profile__table"
+                 ng-class="{'h-profile__disabled h-form__disabled': past}">
+                <div class="h-profile__col">
+                    <div class="h-profile__title f__headline">Событие</div>
+                    <div class="h-profile__group">
+                        <div class="h-profile__cell">
+                            <div class="h-profile__label f__subhead_1 f__regular">Название</div>
+                            <div class="h-profile__label f__subhead_1 f__regular"
+                                 ng-if="!past || eventModel.description">Анонс</div>
+                        </div>
+                        <div class="h-profile__cell h-profile__full">
+                            <div class="h-form__row">
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       ng-disabled="past"
+                                       placeholder="НАЗВАНИЕ СОБЫТИЯ"
+                                       name="name"
+                                       type="text"
+                                       maxlength="100"
+                                       autocomplete="off"
+                                       ng-model="eventModel.name"
+                                       ng-required="eventForm.$submitted">
+                                <span class="h-form__message" ng-show="!eventForm.name.$valid">Поле не может быть пустым</span>
+                            </div>
+                            <div class="h-form__row"
+                                 ng-if="!past || eventModel.description">
+                                <textarea class="h-form__input h-form__input_subhead_1"
+                                          ng-disabled="past"
+                                          placeholder="АНОНС"
+                                          name="description"
+                                          type="text"
+                                          maxlength="500"
+                                          autocomplete="off"
+                                          autoheight
+                                          ng-model="eventModel.description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-profile__line"></div>
+                    <div class="h-profile__title f__headline"
+                         ng-if="!past || eventModel.image">Обложка</div>
+                    <div class="h-profile__group"
+                         ng-if="!past || eventModel.image">
+                        <div class="h-profile__cell">
+                            <div class="h-profile__label f__subhead_1 f__regular">Обложка</div>
+                        </div>
+                        <div class="h-profile__cell h-profile__full">
+                            <div class="h-form__row"
+                                 ng-if="!eventModel.image"
+                                 ng-class="{'h-form__row_right': files.fileImage.length}">
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       placeholder="ВЫБЕРИТЕ ФАЙЛ"
+                                       type="text"
+                                       disabled
+                                       ng-class="{'h-form__input_focus': imageFileShow}"
+                                       ng-value="files.fileImage[0].name">
+                                <input type="file"
+                                       ng-disabled="past"
+                                       accept="image/x-png, image/jpeg"
+                                       name="imageFile"
+                                       file="files.fileImage[0]"
+                                       ng-focus="imageFileShow = true"
+                                       ng-blur="imageFileShow = false">
+                                <span class="h-form__icon btn-icon btn-icon__small mdi mdi-delete"
+                                      ng-show="files.fileImage.length"
+                                      ng-click="files.fileImage = []"></span>
+                            </div>
+                            <div class="h-form__row"
+                                 ng-if="eventModel.image">
+                                <img class="h-profile__preview" ng-src="{{::eventModel.image}}">
+                                <span class="h-profile__btn_delete btn-icon btn-icon__small mdi mdi-delete" title="Удалить"
+                                      ng-if="!past"
+                                      ng-click="eventModel.image = false"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-profile__line"
+                         ng-if="!past || eventModel.materials.length > 0"></div>
+                    <div class="h-profile__title f__headline"
+                         ng-if="!past || eventModel.materials.length > 0">Медиа файлы</div>
+                    <div class="h-profile__group"
+                         ng-if="!past || eventModel.materials.length > 0">
+                        <div class="h-profile__cell">
+                            <div class="h-profile__label"
+                                 ng-repeat="material in eventModel.materials"
+                                 ng-if="!material.delete">
+                                <span class="h-profile__icon mdi {{::types.getIcon(material.name)}}"></span>
+                            </div>
+                            <div class="h-profile__label f__subhead_1 f__regular"
+                                 ng-repeat="file in files.files">Файл</div>
+                            <div class="h-profile__label f__subhead_1 f__regular"
+                                 ng-if="!past">Файл</div>
+                        </div>
+                        <div class="h-profile__cell h-profile__full">
+                            <div class="h-form__row h-form__row_right"
+                                 ng-class="::{'h-form__row_right': !past}"
+                                 ng-repeat="material in eventModel.materials"
+                                 ng-if="!material.delete">
+                                <a class="h-form__file" href="#" ng-href="{{::material.src}}">{{::material.name}}</a>
+                                <span class="h-form__icon btn-icon btn-icon__small mdi mdi-delete"
+                                      ng-if="!past"
+                                      ng-click="material.delete = true"></span>
+                            </div>
+                            <div class="h-form__row h-form__row_right"
+                                 ng-repeat="file in files.files">
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       type="text"
+                                       disabled
+                                       ng-class="{'h-form__input_focus': fileShow}"
+                                       ng-model="files.files[$index].name">
+                                <span class="h-form__icon btn-icon btn-icon__small mdi mdi-delete"
+                                      ng-click="files.files.splice($index, 1)"></span>
+                            </div>
+                            <div class="h-form__row"
+                                 ng-if="!past">
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       placeholder="ВЫБЕРИТЕ ФАЙЛ"
+                                       type="text"
+                                       disabled>
+                                <input type="file"
+                                       accept=""
+                                       file="files.files[files.files.length]"
+                                       ng-focus="fileShow = true"
+                                       ng-blur="fileShow = false">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-profile__col">
+                    <div class="h-profile__title f__headline">Дата время</div>
+                    <div class="h-profile__group h-profile__group_333">
+                        <div class="h-profile__cell">
+                            <div class="h-profile__label f__subhead_1 f__regular">Дата начала</div>
+                            <div class="h-profile__label f__subhead_1 f__regular">Время начала</div>
+                            <div class="h-profile__label f__subhead_1 f__regular">Длительность</div>
+                        </div>
+                        <div class="h-profile__cell h-profile__full">
+                            <div class="h-form__row"
+                                 ng-click="pickerOpen()">
+
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       ng-class="{'h-form__btn': !past, 'ng-invalid': !eventForm.date.$valid}"
+                                       placeholder="ДАТА"
+                                       disabled
+                                       type="text"
+                                       ng-value="eventModel.date | date:'d MMMM yyyy'">
+
+                                <input name="date"
+                                       type="date"
+                                       class="ng-hide"
+                                       ng-model="eventModel.date"
+                                       ng-required="eventForm.$submitted">
+
+                                <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-calendar ng-hide"
+                                      ng-show="!past"></span>
+
+                                <div class="calendar calendar__abs level__3"
+                                     ng-if="!past" ng-show="pickerShow" ng-cloak
+                                     ng-mouseenter="pickerMouseEnter()"
+                                     ng-mouseleave="pickerMouseLeave()"
+                                     oc-clickoutside="pickerClose()">
+                                    <datepicker ng-model="eventModel.date" min-date="minDate" show-weeks="false"></datepicker>
+                                </div>
+
+                                <span class="h-form__message" ng-show="!eventForm.date.$valid">Поле не может быть пустым</span>
+
+                            </div>
+                            <div class="h-form__row clearfix">
+                                <div class="h-form__cell">
+                                    <div class="h-form__in_cell h-form__choose_limit"
+                                         ng-click="!hourStartShow ? hourStartShow = true : hourStartShow = false"
+                                         oc-clickoutside="hourStartShow ? hourStartShow = false : false">
+
+                                        <input class="h-form__input h-form__input_subhead_1"
+                                               ng-class="{'h-form__btn': !past, 'ng-invalid': !eventForm.hourStart.$valid}"
+                                               placeholder="ЧАСЫ"
+                                               disabled
+                                               type="text"
+                                               ng-value="eventModel.hourStart | declOfNum:['час', 'часа', 'часов']">
+
+                                        <input name="hourStart"
+                                               type="number"
+                                               class="ng-hide"
+                                               ng-model="eventModel.hourStart"
+                                               ng-required="eventForm.$submitted">
+
+                                        <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-menu-down ng-hide"
+                                              ng-show="!past"></span>
+
+                                        <div class="menu menu__choose level__1" ng-if="!past" ng-show="hourStartShow">
+                                            <div class="menu__item"
+                                                 ng-repeat="hour in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]"
+                                                 ng-click="eventModel.hourStart = hour"
+                                                 ng-class="{'menu__selected': eventModel.hourStart === hour}">{{::hour | declOfNum:['час', 'часа', 'часов']}}</div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="h-form__cell">
+                                    <div class="h-form__in_cell h-form__choose_limit"
+                                         ng-click="!minuteStartShow ? minuteStartShow = true : minuteStartShow = false"
+                                         oc-clickoutside="minuteStartShow ? minuteStartShow = false : false">
+
+                                        <input class="h-form__input h-form__input_subhead_1"
+                                               ng-class="{'h-form__btn': !past, 'ng-invalid': !eventForm.minuteStart.$valid}"
+                                               placeholder="МИНУТЫ"
+                                               disabled
+                                               type="text"
+                                               ng-value="eventModel.minuteStart | declOfNum:['минута', 'минуты', 'минут']">
+
+                                        <input name="minuteStart"
+                                               type="number"
+                                               class="ng-hide"
+                                               ng-model="eventModel.minuteStart"
+                                               ng-required="eventForm.$submitted">
+
+                                        <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-menu-down ng-hide"
+                                              ng-show="!past"></span>
+
+                                        <div class="menu menu__choose level__1" ng-if="!past" ng-show="minuteStartShow">
+                                            <div class="menu__item"
+                                                 ng-repeat="minute in [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]"
+                                                 ng-click="eventModel.minuteStart = minute"
+                                                 ng-class="{'menu__selected': eventModel.minuteStart === minute}">{{::minute | declOfNum:['минута', 'минуты', 'минут']}}</div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="h-form__row clearfix">
+                                <div class="h-form__cell">
+                                    <div class="h-form__in_cell h-form__choose_limit"
+                                         ng-click="!hourDurationShow ? hourDurationShow = true : hourDurationShow = false"
+                                         oc-clickoutside="hourDurationShow ? hourDurationShow = false : false">
+
+                                        <input class="h-form__input h-form__input_subhead_1"
+                                               ng-class="{'h-form__btn': !past, 'ng-invalid': !eventForm.hourDuration.$valid}"
+                                               placeholder="ЧАСЫ"
+                                               disabled
+                                               type="text"
+                                               ng-required="eventForm.$submitted"
+                                               ng-value="eventModel.hourDuration | declOfNum:['час', 'часа', 'часов']">
+
+                                        <input name="hourDuration"
+                                               type="number"
+                                               class="ng-hide"
+                                               ng-model="eventModel.hourDuration"
+                                               ng-required="eventForm.$submitted">
+
+                                        <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-menu-down ng-hide"
+                                              ng-show="!past"></span>
+
+                                        <div class="menu menu__choose level__1" ng-if="!past" ng-show="hourDurationShow">
+                                            <div class="menu__item"
+                                                 ng-repeat="hour in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]"
+                                                 ng-click="eventModel.hourDuration = hour"
+                                                 ng-class="{'menu__selected': eventModel.hourDuration === hour}">{{::hour | declOfNum:['час', 'часа', 'часов']}}</div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="h-form__cell">
+                                    <div class="h-form__in_cell h-form__choose_limit"
+                                         ng-click="!minuteDurationShow ? minuteDurationShow = true : minuteDurationShow = false"
+                                         oc-clickoutside="minuteDurationShow ? minuteDurationShow = false : false">
+
+                                        <input class="h-form__input h-form__input_subhead_1"
+                                               ng-class="{'h-form__btn': !past, 'ng-invalid': !eventForm.minuteDuration.$valid}"
+                                               placeholder="МИНУТЫ"
+                                               disabled
+                                               type="text"
+                                               ng-value="eventModel.minuteDuration | declOfNum:['минута', 'минуты', 'минут']">
+
+                                        <input name="minuteDuration"
+                                               type="number"
+                                               class="ng-hide"
+                                               ng-model="eventModel.minuteDuration"
+                                               ng-required="eventForm.$submitted">
+
+                                        <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-menu-down ng-hide"
+                                              ng-show="!past"></span>
+
+                                        <div class="menu menu__choose level__1" ng-if="!past" ng-show="minuteDurationShow">
+                                            <div class="menu__item"
+                                                 ng-repeat="minute in [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]"
+                                                 ng-click="eventModel.minuteDuration = minute"
+                                                 ng-class="{'menu__selected': eventModel.minuteDuration === minute}">{{::minute | declOfNum:['минута', 'минуты', 'минут']}}</div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-profile__line"></div>
+                    <div class="h-profile__title f__headline">Права доступа</div>
+                    <div class="h-profile__group">
+                        <div class="h-profile__cell">
+                            <div class="h-profile__label f__subhead_1 f__regular">Права доступа</div>
+                            <div class="h-profile__label f__subhead_1 f__regular"
+                                 ng-if="eventModel.access === 'Private'">Тип доступа</div>
+                            <div class="h-profile__label f__subhead_1 f__regular"
+                                 ng-if="eventModel.access === 'Private' && eventModel.accessType === 'Link'">Ссылка</div>
+                            <div class="h-profile__label f__subhead_1 f__regular"
+                                 ng-if="eventModel.access === 'Private' && eventModel.accessType === 'Group'">Группа</div>
+                            <div class="h-profile__label f__subhead_1 f__regular"
+                                 ng-if="eventModel.access === 'Paid'">Стоимость участия</div>
+                            <div class="h-profile__label f__subhead_1 f__regular"
+                                 ng-if="eventModel.access === 'Paid'">Стоимость просмотра</div>
+                        </div>
+                        <div class="h-profile__cell h-profile__full">
+                            <div class="h-form__row"
+                                 ng-click="!accessShow ? accessShow = true : accessShow = false"
+                                 oc-clickoutside="accessShow ? accessShow = false : false">
+
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       ng-class="{'h-form__btn': !past}"
+                                       disabled
+                                       type="text"
+                                       ng-init="tempModel.accessName = ({All: 'Открытое мероприятие', Private: 'Закрытое мероприятие', Paid: 'Платное мероприятие'})[eventModel.access]"
+                                       ng-model="tempModel.accessName">
+
+                                <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-menu-down ng-hide"
+                                      ng-show="!past"></span>
+
+                                <div class="menu menu__choose level__1" ng-if="!past" ng-show="accessShow">
+                                    <div class="menu__item"
+                                         ng-repeat="item in [['Открытое мероприятие', 'All'], ['Закрытое мероприятие', 'Private'], ['Платное мероприятие', 'Paid']]"
+                                         ng-click="tempModel.accessName = item[0]; eventModel.access = item[1]"
+                                         ng-class="{'menu__selected': tempModel.accessName === item[0]}">{{::item[0]}}</div>
+                                </div>
+
+                            </div>
+                            <div class="h-form__row"
+                                 ng-if="eventModel.access === 'Private'"
+                                 ng-click="!accessTypeShow ? accessTypeShow = true : accessTypeShow = false"
+                                 oc-clickoutside="accessTypeShow ? accessTypeShow = false : false">
+
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       ng-class="{'h-form__btn': !past}"
+                                       disabled
+                                       type="text"
+                                       ng-init="tempModel.accessTypeName = ({Link: 'Доступ по ссылке', Group: 'Доступ группы'})[eventModel.accessType]"
+                                       ng-model="tempModel.accessTypeName">
+
+                                <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-menu-down ng-hide"
+                                      ng-show="!past"></span>
+
+                                <div class="menu menu__choose level__1" ng-if="!past" ng-show="accessTypeShow">
+                                    <div class="menu__item"
+                                         ng-repeat="item in [['Доступ по ссылке', 'Link'], ['Доступ группы', 'Group']]"
+                                         ng-click="tempModel.accessTypeName = item[0]; eventModel.accessType = item[1]"
+                                         ng-class="{'menu__selected': tempModel.accessTypeName === item[0]}">{{::item[0]}}</div>
+                                </div>
+
+                            </div>
+                            <div class="h-form__row"
+                                 ng-if="eventModel.access === 'Private' && eventModel.accessType === 'Link'">
+
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       placeholder="ССЫЛКА"
+                                       disabled
+                                       type="text"
+                                       ng-model="eventModel.url">
+
+                                <span class="h-form__message gray-light-shadow"
+                                      ng-if="id === 'add'">
+                                    Ссылка будет доступна, после создания мероприятия
+                                </span>
+
+                            </div>
+                            <div class="h-form__row h-form__choose_limit"
+                                 ng-if="eventModel.access === 'Private' && eventModel.accessType === 'Group'"
+                                 ng-click="!listsShow ? listsShow = true : listsShow = false"
+                                 oc-clickoutside="groupsShow ? groupsShow = false : false">
+
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       ng-class="{'h-form__btn': !past, 'ng-invalid': !eventForm.list.$valid}"
+                                       placeholder="ВЫБЕРИТЕ ГРУППУ"
+                                       disabled
+                                       type="text"
+                                       ng-model="eventModel.list.name">
+
+                                <input name="list"
+                                       type="text"
+                                       class="ng-hide"
+                                       ng-model="eventModel.list"
+                                       ng-required="eventForm.$submitted">
+
+                                <span class="h-form__icon btn-icon btn-icon__medium mdi mdi-menu-down ng-hide"
+                                      ng-show="!past"></span>
+
+                                <div class="menu menu__choose level__1" ng-if="!past" ng-show="listsShow">
+                                    <div class="menu__item"
+                                         ng-repeat="list in getLists() | orderBy:'name'"
+                                         ng-click="eventModel.list = list"
+                                         ng-class="{'menu__selected': eventModel.list.name === list.name}">{{::list.name}}</div>
+                                </div>
+
+                                <span class="h-form__message gray-light-shadow" ng-show="eventForm.list.$valid">Приглашения будут отправлены, после создания события</span>
+
+                                <span class="h-form__message" ng-hide="eventForm.list.$valid">Поле не может быть пустым</span>
+
+                            </div>
+                            <div class="h-form__row"
+                                 ng-if="eventModel.access === 'Paid'">
+
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       name="pricePart"
+                                       placeholder="СТОИМОТЬ УЧАСТИЯ"
+                                       autocomplete="on"
+                                       ng-pattern="/^([0-9\.\,])*$/"
+                                       maxlength="16"
+                                       ng-disabled="past"
+                                       type="text"
+                                       ng-model="eventModel.pricePart">
+
+                                <span class="h-form__message" ng-show="eventForm.pricePart.$error.pattern">Недопустимый символ</span>
+
+                            </div>
+                            <div class="h-form__row"
+                                 ng-if="eventModel.access === 'Paid'">
+
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       name="priceView"
+                                       placeholder="СТОИМОТЬ ПРОСМОТРА"
+                                       autocomplete="on"
+                                       ng-pattern="/^([0-9])*$/"
+                                       maxlength="16"
+                                       ng-disabled="past"
+                                       type="text"
+                                       ng-model="eventModel.priceView">
+
+                                <span class="h-form__message" ng-show="eventForm.priceView.$error.pattern">Недопустимый символ</span>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-profile__line"
+                         ng-if="!past || eventModel.hashtag"></div>
+                    <div class="h-profile__title f__headline"
+                         ng-if="!past || eventModel.hashtag">Сбор публикаций</div>
+                    <div class="h-profile__group"
+                         ng-if="!past || eventModel.hashtag">
+                        <div class="h-profile__cell">
+                            <div class="h-profile__label f__subhead_1 f__regular">Hashtag</div>
+                        </div>
+                        <div class="h-profile__cell h-profile__full">
+                            <div class="h-form__row">
+                                <input class="h-form__input h-form__input_subhead_1"
+                                       ng-disabled="past"
+                                       placeholder="HASHTAG"
+                                       name="hashtag"
+                                       type="text"
+                                       maxlength="50"
+                                       autocomplete="off"
+                                       ng-model="eventModel.hashtag">
+                                <span class="h-form__message gray-light-shadow">Twitter, Instagram</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <img class="h-page__loader" src="images/loader.gif" ng-show="pageLoaderShow">
+
+    </div>
+</div>

@@ -1,0 +1,172 @@
+<div class="h-page__container h-page__down h-page__up">
+    <div class="h-page h-page__min_height_600 level__2">
+
+        <div class="personal__ctrl">
+            <button class="btn" ng-click="create()">создать событие</button>
+            <div class="personal__ctrl_sort" ng-show="events.length > 0">
+                <button class="personal__btn_icon btn-icon btn-icon__medium mdi mdi-filter" title="Фильтр"
+                        ng-class="{'btn-icon__select': filterShow}"
+                        ng-click="filterShow = !filterShow; filter = 'all'"></button>
+                <div class="personal__ctrl_menu" ng-show="filterShow">
+                    <choose ng-model="filter">
+                        <item value="all" default>Все</item>
+                        <item value="past">Прошедшие</item>
+                        <item value="future">Будущие</item>
+                        <item value="paid">Платные мероприятия</item>
+                        <item value="free">Бесплатные мероприятия</item>
+                    </choose>
+                </div>
+                <button class="personal__btn_icon btn-icon btn-icon__medium mdi mdi-sort" title="Сортировка"
+                        ng-class="{'btn-icon__select': orderByShow}"
+                        ng-click="orderByShow = !orderByShow"></button>
+                <div class="personal__ctrl_menu" ng-show="orderByShow">
+                    <choose ng-model="orderBy">
+                        <item value="date" default>По дате</item>
+                        <item value="name">По названию</item>
+                        <item value="likes">По количеству лайков</item>
+                        <item value="views">По количеству просмотров</item>
+                        <item value="students.length">По количеству участников</item>
+                        <item value="summary">По доходности</item>
+                    </choose>
+                    <choose ng-model="reverse">
+                        <item value="true" default>По убыванию</item>
+                        <item value="false">По возрастанию</item>
+                    </choose>
+                </div>
+            </div>
+        </div>
+
+        <div class="personal__events ng-hide" ng-hide="pageLoaderShow">
+            <div class="personal__group">
+                <div class="personal__item" ng-if="totalItems > 0">
+                    <div class="personal__cell_min"></div>
+                    <div class="personal__cell_min personal__cell_first">
+                        <div class="personal__icon mdi mdi-timetable" title="Дата время"
+                             ng-class="{'blue-soft': orderBy === 'date'}"
+                             ng-click="sort('date')"></div>
+                    </div>
+                    <div class="personal__cell_min">
+                        <div class="personal__icon mdi mdi-bell" title="Название события"
+                             ng-class="{'blue-soft': orderBy === 'name'}"
+                             ng-click="sort('name')"></div>
+                    </div>
+                    <div class="personal__cell_min">
+                        <div class="personal__icon mdi mdi-heart" title="Количество лайков"
+                             ng-class="{'blue-soft': orderBy === 'likes'}"
+                             ng-click="sort('likes')"></div>
+                    </div>
+                    <div class="personal__cell_min">
+                        <div class="personal__icon mdi mdi-eye" title="Количество просмотров"
+                             ng-class="{'blue-soft': orderBy === 'views'}"
+                             ng-click="sort('views')"></div>
+                    </div>
+                    <div class="personal__cell_min">
+                        <div class="personal__icon mdi mdi-account-multiple" title="Количество участников"
+                             ng-class="{'blue-soft': orderBy === 'students.length'}"
+                             ng-click="sort('students.length')"></div>
+                    </div>
+                    <div class="personal__cell_min">
+                        <div class="personal__icon_bold" title="Сборы"
+                             ng-class="{'blue-soft': orderBy === 'summary'}"
+                             ng-click="sort('summary')">Σ</div>
+                    </div>
+                    <div class="personal__cell_last"></div>
+                </div>
+            </div>
+            <div class="personal__group"
+                 ng-repeat="event in getEvents()"
+                 ng-controller="eventUsersCtrl">
+                <div class="personal__item">
+                    <div class="personal__preview"
+                        ng-class="{'personal__online': event.status === 1}">
+                        <img ng-src="{{::event.image ? event.image : 'images/personal__preview_img.png'}}">
+                    </div>
+                    <div class="personal__cell_min personal__cell_first">
+                        <div class="f__subhead_1 f__regular gray-dark-light">
+                            {{::event.date | date:'d MMMM yyyy, HH:mm'}} - {{::event.date + event.duration | date:'HH:mm'}}
+                        </div>
+                    </div>
+                    <div class="personal__cell_min personal__title">
+                        <a href="/watch/{{::event.id}}" class="f__subhead_1 f__regular">{{::event.name}}</a>
+                        <div>{{::event.description}}</div>
+                    </div>
+                    <div class="personal__cell_min f__subhead_1 f__regular" title="Лайки"
+                         ng-class="{'personal__hover': event.likes > 0, 'personal__selected': blockShow}"
+                         ng-click="event.likes > 0 && showLikes(event.id)">
+                        {{::event.likes}}
+                    </div>
+                    <div class="personal__cell_min f__subhead_1 f__regular">
+                        {{::event.views}}
+                    </div>
+                    <div class="personal__cell_min f__subhead_1 f__regular" title="Участники"
+                         ng-class="{'personal__hover': event.students.length > 0}"
+                         ng-click="event.students.length > 0 && showStudents(event.id)">
+                        {{::event.students.length}}
+                    </div>
+                    <div class="personal__cell_min personal__cell_min_last f__subhead_1 f__regular" title="Сборы"
+                         ng-class="{'personal__hover': event.summary > 0}"
+                         ng-click="event.summary > 0 && showSummary(event.id)">
+                        {{::event.summary | currency:undefined:0}}
+                    </div>
+                    <div class="personal__cell_last">
+                        <button class="btn-icon mdi mdi-pencil btn-icon__medium btn-icon__no_rounded" title="Изменить"
+                                ng-click="edit(event.id)"></button>
+                    </div>
+                </div>
+                <div class="personal__item" ng-style="{'height': height + 'px'}" ng-if="blockShow">
+                    <div class="personal__likes" height="height">
+                        <div class="personal__user"
+                             ng-repeat="user in users"
+                             ng-if="$index < maxIndex">
+                            <a class="personal__user_profile" ng-href="/profile/{{::user._id}}">
+                                <img class="personal__user_pic" ng-src="{{::user.photo ? user.photo : '/images/synopsis__user_pic.png'}}">
+                                <span class="personal__user_name">{{::user.name}}</span>
+                            </a>
+                            <a class="personal__user_send btn-icon btn-icon__medium mdi mdi-comment-outline"
+                               ng-if="user.email"
+                               title="Написать"
+                               target="_blank"
+                               href="mailto:{{::user.email}}"></a>
+                        </div>
+
+                        <div class="personal__more"
+                             ng-if="users.length > maxIndex"
+                             ng-click="more()">
+                            <div class="btn-icon btn-icon__medium mdi mdi-chevron-down"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="personal__item" ng-hide="blockShow">
+                    <div class="personal__line"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="personal__total ng-hide"
+             ng-hide="pageLoaderShow"
+             ng-if="totalItems > 0">
+            <div class="personal__item">
+                <div class="personal__label">Сумма:</div>
+                <div class="personal__sum">{{total | currency:undefined:0}}</div>
+            </div>
+        </div>
+
+        <div class="ng-hide" ng-show="(totalItems > 0) && (totalItems > itemsPerPage)">
+            <pagination
+                    total-items="totalItems"
+                    items-per-page="itemsPerPage"
+                    max-size="maxSize"
+                    rotate="false"
+                    ng-model="currentPage"></pagination>
+        </div>
+
+        <div class="personal__entry ng-hide"
+             ng-hide="pageLoaderShow"
+             ng-if="totalItems === 0">
+            <i>События отсутствуют</i>
+        </div>
+
+        <img class="h-page__loader" src="images/loader.gif" ng-show="pageLoaderShow">
+
+    </div>
+</div>
